@@ -60,7 +60,7 @@ function checkJavaRuntime(): Promise<string> {
             return resolve(javaHome);
         }
         //No settings, let's try to detect as last resort.
-        findJavaHome(function (err, home) {
+        findJavaHome({allowJre: true}, function (err, home) {
                 if (err){
                     openJDKDownload(reject,'Java runtime could not be located');
                 }
@@ -78,7 +78,7 @@ function readJavaConfig() : string {
  
 function checkJavaVersion(java_home: string): Promise<number> {
     return new Promise((resolve, reject) => {
-        cp.execFile(java_home + '/bin/java', ['-version'], {}, (error, stdout, stderr) => {
+        cp.execFile(java_home + '/javapath/java', ['-version'], {}, (error, stdout, stderr) => {
             let javaVersion = parseMajorVersion(stderr);
             if (javaVersion < 8) {
                 openJDKDownload(reject, 'Java 8 or more recent is required to run. Please download and install a recent JDK.');

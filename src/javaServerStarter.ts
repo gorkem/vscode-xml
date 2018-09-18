@@ -16,7 +16,7 @@ export function prepareExecutable(requirements: RequirementsData): Executable {
 	options.env = process.env;
 	options.stdio = 'pipe';
 	executable.options = options;
-	executable.command = path.resolve(requirements.java_home + '/bin/java');
+	executable.command = path.resolve(requirements.java_home + '/javapath/java');
 	executable.args = prepareParams(requirements);
 	return executable;
 }
