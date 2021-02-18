@@ -51,7 +51,7 @@ export function subscribeJDKChangeConfiguration() {
       oldXMLConfig = newXMLConfig;
       return;
     }
-    
+
     //handle "java.home" change
     if(oldXMLConfig.get("java.home") == null) { // if "xml.java.home" exists, dont even look at "java.home"
       if(params.affectsConfiguration("java")) {
@@ -99,9 +99,15 @@ function verifyVMArgs() {
 }
 
 function verifyAutoClosing() {
-  let configXML = workspace.getConfiguration();
-  let closeTags = configXML.get("xml.completion.autoCloseTags");
-  let closeBrackets = configXML.get("[xml]")["editor.autoClosingBrackets"];
+  let closeTags = getXMLConfiguration().get("completion.autoCloseTags");
+  /*
+   * HACK: the second parameter has changed in newer API:
+   * https://github.com/microsoft/vscode/blob/40827f365c376dd6753116326fd10a9f826655b7/src/vs/vscode.d.ts#L9965
+   * In order to avoid warnings about accessing a resource-specific config,
+   * since [xml] only applies if the document is an xml document,
+   * a null document value is passed.
+   */
+  let closeBrackets = workspace.getConfiguration("[xml]", null)["editor.autoClosingBrackets"];
   if (closeTags && closeBrackets != "never") {
     window.showWarningMessage(
       "The [xml].editor.autoClosingBrackets setting conflicts with xml.completion.autoCloseTags. It's recommended to disable it.",

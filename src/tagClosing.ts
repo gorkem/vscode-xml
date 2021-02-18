@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
- * 
+ *
  *  Retrieved from: https://github.com/Microsoft/vscode/blob/f707828426bd87e88c17d2da34f2ceed0019d8bd/extensions/html-language-features/client/src/tagClosing.ts
  *--------------------------------------------------------------------------------------------*/
 'use strict';
@@ -34,7 +34,7 @@ export function activateTagClosing(tagProvider: (document: TextDocument, positio
 		if (!supportedLanguages[document.languageId]) {
 			return;
 		}
-		if (!workspace.getConfiguration(void 0, document.uri).get<boolean>(configName)) {
+		if (!workspace.getConfiguration().get<boolean>(configName)) {
 			return;
 		}
 		isEnabled = true;
@@ -86,7 +86,6 @@ export function activateTagClosing(tagProvider: (document: TextDocument, positio
 						let activeDocument = activeEditor.document;
 						if (document === activeDocument && activeDocument.version === version) {
 							activeEditor.insertSnippet(new SnippetString(text), replaceLocation);
-							
 						}
 					}
 				}
