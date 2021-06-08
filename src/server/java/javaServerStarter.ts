@@ -5,8 +5,10 @@ import { Executable } from 'vscode-languageclient/node';
 import { getProxySettings, getProxySettingsAsJVMArgs, jvmArgsContainsProxySettings, ProxySettings } from '../../settings/proxySettings';
 import { getJavaagentFlag, getKey, getXMLConfiguration, IS_WORKSPACE_VMARGS_XML_ALLOWED, xmlServerVmargs } from '../../settings/settings';
 import { RequirementsData } from '../requirements';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const glob = require('glob');
 
+// eslint-disable-next-line no-var
 declare var v8debug;
 
 const DEBUG = (typeof v8debug === 'object') || startedInDebugMode();
@@ -24,7 +26,7 @@ export async function prepareJavaExecutable(
 }
 
 function prepareParams(requirements: RequirementsData, xmlJavaExtensions: string[], context: ExtensionContext): string[] {
-  let params: string[] = [];
+  const params: string[] = [];
   if (DEBUG) {
     if (process.env['SUSPEND_SERVER'] === 'true') {
       params.push('-agentlib:jdwp=transport=dt_socket,server=y,address=1054');
@@ -33,7 +35,7 @@ function prepareParams(requirements: RequirementsData, xmlJavaExtensions: string
     }
   }
   let vmargsCheck = workspace.getConfiguration().inspect(xmlServerVmargs).workspaceValue;
-  if (vmargsCheck !== undefined) {
+  if (vmargsCheck !== undefined && typeof vmargsCheck === 'string') {
     const agentFlag = getJavaagentFlag(vmargsCheck);
     if (agentFlag !== null) {
       const keyVmargs = getKey(IS_WORKSPACE_VMARGS_XML_ALLOWED, context.storagePath, vmargsCheck);
@@ -70,8 +72,8 @@ function prepareParams(requirements: RequirementsData, xmlJavaExtensions: string
     params.push('-noverify');
   }
   parseVMargs(params, vmargs);
-  let server_home: string = path.resolve(__dirname, '../server');
-  let launchersFound: Array<string> = glob.sync('**/org.eclipse.lemminx*-uber.jar', { cwd: server_home });
+  const server_home: string = path.resolve(__dirname, '../server');
+  const launchersFound: Array<string> = glob.sync('**/org.eclipse.lemminx*-uber.jar', { cwd: server_home });
   if (launchersFound.length) {
     let xmlJavaExtensionsClasspath = '';
     if (xmlJavaExtensions.length > 0) {
@@ -100,11 +102,11 @@ function hasDebugFlag(args: string[]): boolean {
 }
 
 //exported for tests
-export function parseVMargs(params: any[], vmargsLine: string) {
+export function parseVMargs(params: any[], vmargsLine: string): void {
   if (!vmargsLine) {
     return;
   }
-  let vmargs = vmargsLine.match(/(?:[^\s"]+|"[^"]*")+/g);
+  const vmargs = vmargsLine.match(/(?:[^\s"]+|"[^"]*")+/g);
   if (vmargs === null) {
     return;
   }

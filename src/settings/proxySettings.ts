@@ -109,7 +109,7 @@ export function getProxySettings(): ProxySettings {
 export function getProxySettingsAsJVMArgs(proxySettings: ProxySettings): string {
   // Java doesn't recognize localhost in the proxy settings
   const adaptedHostName = 'localhost'.startsWith(proxySettings.host) ? '127.0.0.1' : proxySettings.host;
-  let proxyJVMArgs: string = ` -Dhttp.proxyHost=${adaptedHostName} -Dhttp.proxyPort=${proxySettings.port} `;
+  let proxyJVMArgs = ` -Dhttp.proxyHost=${adaptedHostName} -Dhttp.proxyPort=${proxySettings.port} `;
   if (proxySettings.auth) {
     proxyJVMArgs += ` -Dhttp.proxyUser=${proxySettings.auth.username} -Dhttp.proxyPassword=${proxySettings.auth.password} `;
   }
@@ -123,7 +123,7 @@ export function getProxySettingsAsJVMArgs(proxySettings: ProxySettings): string 
  * @returns the proxy settings as environment variables for LemMinX
  */
 export function getProxySettingsAsEnvironmentVariables(proxySettings: ProxySettings): any {
-  let proxyEnv: any = {};
+  const proxyEnv: any = {};
 
   proxyEnv['HTTP_PROXY_HOST'] = proxySettings.host;
   proxyEnv['HTTP_PROXY_PORT'] = proxySettings.port;

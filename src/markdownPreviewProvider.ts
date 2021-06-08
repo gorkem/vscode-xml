@@ -1,7 +1,7 @@
 import { Disposable, WebviewPanel, window, ViewColumn, commands, Uri, Webview, ExtensionContext, env } from "vscode";
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { CommandConstants } from "./commands/commandConstants";
+import * as CommandConstants from "./commands/commandConstants";
 
 class MarkdownPreviewProvider implements Disposable {
     private panel: WebviewPanel | undefined;
@@ -53,7 +53,7 @@ class MarkdownPreviewProvider implements Disposable {
             // i.e. [here](OtherPage#section) gets replaced, but [here](OtherPage) doesn't
             // Captures markdown links like this: [$1]($2#$3)
             // where $1, $2, $3 are non empty strings that are then passed to the replace function
-            markdownString = markdownString.replace(/\[([^\]]+)\]\(([^#\)]+)#([^)]*)\)/g,
+            markdownString = markdownString.replace(/\[([^\]]+)\]\(([^#)]+)#([^)]*)\)/g,
                     (_match: string, linkText: string, page: string, section: string) => {
                 return `<a href="command:xml.open.docs?%5B%7B%22page%22%3A%22${page}%22%2C%22section%22%3A%22${section}%22%7D%5D">${linkText}</a>`
             });

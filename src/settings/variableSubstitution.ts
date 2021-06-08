@@ -77,14 +77,14 @@ const VARIABLE_SUBSTITUTIONS: VariableSubstitution[] = [
   new VariableSubstitution(
     "fileDirname",
     VariableSubstitutionKind.File,
-    (currentFileUri: string, currentWorkspaceUri: string): string => {
+    (currentFileUri: string, _currentWorkspaceUri: string): string => {
       return path.dirname(currentFileUri);
     }
   ),
   new VariableSubstitution(
     "fileBasenameNoExtension",
     VariableSubstitutionKind.File,
-    (currentFileUri: string, currentWorkspaceUri: string): string => {
+    (currentFileUri: string, _currentWorkspaceUri: string): string => {
       return path.basename(currentFileUri, path.extname(currentFileUri));
     }
   )

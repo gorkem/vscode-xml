@@ -23,7 +23,7 @@ import * as requirements from './server/requirements';
 import { prepareExecutable } from './server/serverStarter';
 import { ExternalXmlSettings } from "./settings/externalXmlSettings";
 import { getXMLConfiguration } from './settings/settings';
-import { Telemetry } from './telemetry';
+import * as Telemetry from './telemetry';
 
 let languageClient: LanguageClient;
 

@@ -1,8 +1,9 @@
 'use strict';
 
-import * as vscode from 'vscode';
 import * as path from 'path';
-import { CommandConstants } from './commands/commandConstants';
+import * as vscode from 'vscode';
+import * as CommandConstants from './commands/commandConstants';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const glob = require('glob');
 
 let existingExtensions: Array<string>;
@@ -30,7 +31,7 @@ export function collectXmlJavaExtensions(extensions: readonly vscode.Extension<a
 	return result;
 }
 
-export function onExtensionChange(extensions: readonly vscode.Extension<any>[], jars: string[]) {
+export function onExtensionChange(extensions: readonly vscode.Extension<any>[], jars: string[]): void {
 	if (!existingExtensions) {
 		return;
 	}

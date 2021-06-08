@@ -3,14 +3,14 @@ import { commands, ExtensionContext, Position, Uri, window, workspace } from "vs
 import { CancellationToken, ExecuteCommandParams, ExecuteCommandRequest, ReferencesRequest, TextDocumentIdentifier } from "vscode-languageclient";
 import { LanguageClient } from 'vscode-languageclient/node';
 import { markdownPreviewProvider } from "../markdownPreviewProvider";
-import { CommandConstants } from "./commandConstants";
+import * as CommandConstants from "./commandConstants";
 
 /**
  * Register the commands for vscode-xml
  *
  * @param context the extension context
  */
-export async function registerCommands(context: ExtensionContext, languageClient: LanguageClient) {
+export async function registerCommands(context: ExtensionContext, languageClient: LanguageClient): Promise<void> {
 
   registerDocsCommands(context);
   registerCodeLensCommands(context, languageClient);
@@ -74,7 +74,7 @@ async function registerCodeLensCommands(context: ExtensionContext, languageClien
     const uri = Uri.parse(uriString);
     workspace.openTextDocument(uri).then(document => {
       // Consume references service from the XML Language Server
-      let param = languageClient.code2ProtocolConverter.asTextDocumentPositionParams(document, position);
+      const param = languageClient.code2ProtocolConverter.asTextDocumentPositionParams(document, position);
       languageClient.sendRequest(ReferencesRequest.type, param).then(locations => {
         commands.executeCommand(CommandConstants.EDITOR_SHOW_REFERENCES, uri, languageClient.protocol2CodeConverter.asPosition(position), locations.map(languageClient.protocol2CodeConverter.asLocation));
       })
@@ -89,7 +89,7 @@ async function registerCodeLensCommands(context: ExtensionContext, languageClien
  */
 async function registerValidationCommands(context: ExtensionContext): Promise<void> {
   // Revalidate current file
-  context.subscriptions.push(commands.registerCommand(CommandConstants.VALIDATE_CURRENT_FILE, async (params) => {
+  context.subscriptions.push(commands.registerCommand(CommandConstants.VALIDATE_CURRENT_FILE, async () => {
     const uri = window.activeTextEditor.document.uri;
     const identifier = TextDocumentIdentifier.create(uri.toString());
     commands.executeCommand(CommandConstants.EXECUTE_WORKSPACE_COMMAND, CommandConstants.VALIDATE_CURRENT_FILE, identifier).

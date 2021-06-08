@@ -3,24 +3,20 @@ import { commands, ExtensionContext, extensions, Position, TextDocument, TextEdi
 import { Command, ConfigurationParams, ConfigurationRequest, DidChangeConfigurationNotification, ExecuteCommandParams, LanguageClientOptions, MessageType, NotificationType, RequestType, RevealOutputChannelOn, TextDocumentPositionParams } from "vscode-languageclient";
 import { Executable, LanguageClient } from 'vscode-languageclient/node';
 import { XMLFileAssociation } from '../api/xmlExtensionApi';
-import { CommandConstants } from '../commands/commandConstants';
+import * as CommandConstants from '../commands/commandConstants';
 import { registerCommands } from '../commands/registerCommands';
 import { onExtensionChange } from '../plugin';
 import { RequirementsData } from "../server/requirements";
 import { ExternalXmlSettings } from "../settings/externalXmlSettings";
 import { getXMLConfiguration, getXMLSettings, onConfigurationChange, subscribeJDKChangeConfiguration } from "../settings/settings";
 import { containsVariableReferenceToCurrentFile } from '../settings/variableSubstitution';
-import { Telemetry } from '../telemetry';
+import * as Telemetry from '../telemetry';
 import { ClientErrorHandler } from './clientErrorHandler';
 import { activateTagClosing, AutoCloseResult } from './tagClosing';
 
-namespace ExecuteClientCommandRequest {
-  export const type: RequestType<ExecuteCommandParams, any, void> = new RequestType('xml/executeClientCommand');
-}
+const ExecuteClientCommandRequest: RequestType<ExecuteCommandParams, any, void> = new RequestType('xml/executeClientCommand');
 
-namespace TagCloseRequest {
-  export const type: RequestType<TextDocumentPositionParams, AutoCloseResult, any> = new RequestType('xml/closeTag');
-}
+const TagCloseRequest: RequestType<TextDocumentPositionParams, AutoCloseResult, any> = new RequestType('xml/closeTag');
 
 interface ActionableMessage {
   severity: MessageType;
@@ -29,9 +25,7 @@ interface ActionableMessage {
   commands?: Command[];
 }
 
-namespace ActionableNotification {
-  export const type = new NotificationType<ActionableMessage>('xml/actionableNotification');
-}
+const ActionableNotification = new NotificationType<ActionableMessage>('xml/actionableNotification');
 
 let languageClient: LanguageClient;
 
@@ -55,7 +49,7 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   setupActionableNotificationListener(languageClient);
 
   // Handler for 'xml/executeClientCommand` request message that executes a command on the client
-  languageClient.onRequest(ExecuteClientCommandRequest.type, async (params: ExecuteCommandParams) => {
+  languageClient.onRequest(ExecuteClientCommandRequest, async (params: ExecuteCommandParams) => {
     return await commands.executeCommand(params.command, ...params.arguments);
   });
 
@@ -63,8 +57,8 @@ export async function startLanguageClient(context: ExtensionContext, executable:
 
   // Setup autoCloseTags
   const tagProvider = (document: TextDocument, position: Position) => {
-    let param = languageClient.code2ProtocolConverter.asTextDocumentPositionParams(document, position);
-    let text = languageClient.sendRequest(TagCloseRequest.type, param);
+    const param = languageClient.code2ProtocolConverter.asTextDocumentPositionParams(document, position);
+    const text = languageClient.sendRequest(TagCloseRequest, param);
     return text;
   };
   context.subscriptions.push(activateTagClosing(tagProvider, { xml: true, xsl: true }, CommandConstants.AUTO_CLOSE_TAGS));
@@ -148,7 +142,7 @@ function getLanguageClientOptions(logfile: string, externalXmlSettings: External
 }
 
 function setupActionableNotificationListener(languageClient: LanguageClient): void {
-  languageClient.onNotification(ActionableNotification.type, (notification: ActionableMessage) => {
+  languageClient.onNotification(ActionableNotification, (notification: ActionableMessage) => {
     let show = null;
     switch (notification.severity) {
       case MessageType.Info:

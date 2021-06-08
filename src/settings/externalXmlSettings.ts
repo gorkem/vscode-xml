@@ -17,7 +17,7 @@ export class ExternalXmlSettings {
     return this._xmlCatalogs;
   }
 
-  get xmlFileAssociations(): any[] {
+  get xmlFileAssociations(): XMLFileAssociation[] {
     return this._xmlFileAssociations;
   }
 

@@ -1,7 +1,7 @@
 import { commands, ConfigurationTarget, ExtensionContext, window } from "vscode";
 import { Executable } from "vscode-languageclient/node";
 import { getXMLConfiguration } from "../settings/settings";
-import { Telemetry } from "../telemetry";
+import * as Telemetry from "../telemetry";
 import { ABORTED_ERROR, prepareBinaryExecutable } from "./binary/binaryServerStarter";
 import { prepareJavaExecutable } from "./java/javaServerStarter";
 import { getOpenJDKDownloadLink, RequirementsData } from "./requirements";
@@ -28,9 +28,9 @@ export async function prepareExecutable(
   const useBinary: boolean = (!hasJava) || (preferBinary && !hasExtensions);
 
   if (hasExtensions && !hasJava && !silenceExtensionWarning) {
-    const DOWNLOAD_JAVA: string = 'Get Java';
-    const CONFIGURE_JAVA: string = 'More Info';
-    const DISABLE_WARNING: string = 'Disable Warning';
+    const DOWNLOAD_JAVA = 'Get Java';
+    const CONFIGURE_JAVA = 'More Info';
+    const DISABLE_WARNING = 'Disable Warning';
     window.showInformationMessage('Extensions to the XML language server were detected, but no Java was found. '
       + 'In order to use these extensions, please install and configure a Java runtime (Java 8 or more recent).',
       DOWNLOAD_JAVA, CONFIGURE_JAVA, DISABLE_WARNING)
@@ -48,7 +48,7 @@ export async function prepareExecutable(
   }
 
   if (useBinary) {
-    return prepareBinaryExecutable(context)
+    return prepareBinaryExecutable()
       .catch((e) => {
         const javaServerMessage = hasJava ? 'Falling back to the Java server.' : 'Cannot start XML language server, since Java is missing.';
         if (e === ABORTED_ERROR) {

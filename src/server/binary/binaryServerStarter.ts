@@ -5,13 +5,14 @@ import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import { Readable } from 'stream';
-import { ExtensionContext, extensions, ProgressLocation, ProgressOptions, window, WorkspaceConfiguration } from "vscode";
+import { extensions, ProgressLocation, ProgressOptions, window, WorkspaceConfiguration } from "vscode";
 import { Executable } from "vscode-languageclient/node";
 import * as yauzl from 'yauzl';
 import { getProxySettings, getProxySettingsAsEnvironmentVariables, ProxySettings } from '../../settings/proxySettings';
 import { getXMLConfiguration } from "../../settings/settings";
-import { Telemetry } from '../../telemetry';
+import * as Telemetry from '../../telemetry';
 import { addTrustedHash, getTrustedHashes } from './binaryHashManager';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const glob = require('glob');
 
 const HTTPS_PATTERN = /^https:\/\//;
@@ -26,7 +27,7 @@ export const ABORTED_ERROR: Error = new Error('XML Language Server download canc
  * @throws if the binary doesn't exist and can't be downloaded, or if the binary is not trusted
  * @returns Returns the executable to launch LemMinX (the XML Language Server) as a binary
  */
-export async function prepareBinaryExecutable(context: ExtensionContext): Promise<Executable> {
+export async function prepareBinaryExecutable(): Promise<Executable> {
   const binaryArgs: string = getXMLConfiguration().get("server.binary.args");
   let binaryExecutable: Executable;
   return getServerBinaryPath()
@@ -165,7 +166,7 @@ async function checkBinaryHash(binaryPath: string): Promise<boolean> {
       }
       return askIfTrustsUnrecognizedBinary(hashDigest, binaryPath);
     })
-    .catch((err: any) => {
+    .catch((_err) => {
       return false;
     });
 }

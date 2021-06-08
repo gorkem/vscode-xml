@@ -15,7 +15,7 @@ export interface AutoCloseResult {
 
 export function activateTagClosing(tagProvider: (document: TextDocument, position: Position) => Thenable<AutoCloseResult>, supportedLanguages: { [id: string]: boolean }, configName: string): Disposable {
 
-  let disposables: Disposable[] = [];
+  const disposables: Disposable[] = [];
   workspace.onDidChangeTextDocument(event => onDidChangeTextDocument(event.document, event.contentChanges), null, disposables);
 
   let isEnabled = false;
@@ -26,11 +26,11 @@ export function activateTagClosing(tagProvider: (document: TextDocument, positio
 
   function updateEnabledState() {
     isEnabled = false;
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor;
     if (!editor) {
       return;
     }
-    let document = editor.document;
+    const document = editor.document;
     if (!supportedLanguages[document.languageId]) {
       return;
     }
@@ -44,30 +44,30 @@ export function activateTagClosing(tagProvider: (document: TextDocument, positio
     if (!isEnabled) {
       return;
     }
-    let activeDocument = window.activeTextEditor && window.activeTextEditor.document;
+    const activeDocument = window.activeTextEditor && window.activeTextEditor.document;
     if (document !== activeDocument || changes.length === 0) {
       return;
     }
     if (typeof timeout !== 'undefined') {
       clearTimeout(timeout);
     }
-    let lastChange = changes[changes.length - 1];
-    let lastCharacter = lastChange.text[lastChange.text.length - 1];
+    const lastChange = changes[changes.length - 1];
+    const lastCharacter = lastChange.text[lastChange.text.length - 1];
     if (lastChange.rangeLength > 0 || lastCharacter !== '>' && lastCharacter !== '/') {
       return;
     }
-    let rangeStart = lastChange.range.start;
-    let version = document.version;
+    const rangeStart = lastChange.range.start;
+    const version = document.version;
     timeout = setTimeout(() => {
-      let position = new Position(rangeStart.line, rangeStart.character + lastChange.text.length);
+      const position = new Position(rangeStart.line, rangeStart.character + lastChange.text.length);
       tagProvider(document, position).then(result => {
         const text = result?.snippet;
         if (text && isEnabled) {
-          let activeEditor = window.activeTextEditor;
+          const activeEditor = window.activeTextEditor;
           if (activeEditor) {
-            let activeDocument = activeEditor.document;
+            const activeDocument = activeEditor.document;
             if (document === activeDocument && activeDocument.version === version) {
-              let selections = activeEditor.selections;
+              const selections = activeEditor.selections;
               if (selections.length > 1 && selections.some(s => s.active.isEqual(position))) {
                 // multiple cusror case
                 activeEditor.insertSnippet(new SnippetString(text), selections.map(s => s.active));
@@ -78,7 +78,7 @@ export function activateTagClosing(tagProvider: (document: TextDocument, positio
             }
           }
         }
-      }, (reason: any) => {
+      }, (_reason) => {
         console.log('xml/closeTag request has been cancelled');
       });
       timeout = void 0;
@@ -92,10 +92,10 @@ function getReplaceLocation(range: Range, position: Position): Range | Position 
     // re-create Range
     let line = range.start.line;
     let character = range.start.character;
-    let startPosition = new Position(line, character);
+    const startPosition = new Position(line, character);
     line = range.end.line;
     character = range.end.character;
-    let endPosition = new Position(line, character);
+    const endPosition = new Position(line, character);
     return new Range(startPosition, endPosition);
   }
   return position;
