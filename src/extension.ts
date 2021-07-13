@@ -10,21 +10,23 @@
  *  Microsoft Corporation - Auto Closing Tags
  */
 
+import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { ExtensionContext, extensions, languages } from "vscode";
 import { Executable, LanguageClient } from 'vscode-languageclient/node';
 import { XMLExtensionApi } from './api/xmlExtensionApi';
 import { getXmlExtensionApiImplementation } from './api/xmlExtensionApiImplementation';
+import { cleanUpHeapDumps } from './client/clientErrorHandler';
 import { getIndentationRules } from './client/indentation';
 import { startLanguageClient } from './client/xmlClient';
+import { registerClientOnlyCommands } from './commands/registerCommands';
 import { collectXmlJavaExtensions } from './plugin';
 import * as requirements from './server/requirements';
 import { prepareExecutable } from './server/serverStarter';
 import { ExternalXmlSettings } from "./settings/externalXmlSettings";
 import { getXMLConfiguration } from './settings/settings';
 import { Telemetry } from './telemetry';
-import { registerClientOnlyCommands } from './commands/registerCommands';
 
 let languageClient: LanguageClient;
 
@@ -52,6 +54,8 @@ export async function activate(context: ExtensionContext): Promise<XMLExtensionA
     storagePath = os.homedir() + "/.lemminx";
   }
   const logfile = path.resolve(storagePath + '/lemminx.log');
+  await fs.ensureDir(context.globalStorageUri.fsPath);
+  await cleanUpHeapDumps(context);
 
   const externalXmlSettings: ExternalXmlSettings = new ExternalXmlSettings();
 

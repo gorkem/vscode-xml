@@ -3,7 +3,7 @@ import { commands, ExtensionContext, extensions, Position, TextDocument, TextEdi
 import { Command, ConfigurationParams, ConfigurationRequest, DidChangeConfigurationNotification, ExecuteCommandParams, LanguageClientOptions, MessageType, NotificationType, RequestType, RevealOutputChannelOn, TextDocumentPositionParams } from "vscode-languageclient";
 import { Executable, LanguageClient } from 'vscode-languageclient/node';
 import { XMLFileAssociation } from '../api/xmlExtensionApi';
-import { ClientCommandConstants, ServerCommandConstants } from '../commands/commandConstants';
+import { ServerCommandConstants } from '../commands/commandConstants';
 import { registerClientServerCommands } from '../commands/registerCommands';
 import { onExtensionChange } from '../plugin';
 import { RequirementsData } from "../server/requirements";
@@ -37,7 +37,7 @@ let languageClient: LanguageClient;
 
 export async function startLanguageClient(context: ExtensionContext, executable: Executable, logfile: string, externalXmlSettings: ExternalXmlSettings, requirementsData: RequirementsData): Promise<LanguageClient> {
 
-  const languageClientOptions: LanguageClientOptions = getLanguageClientOptions(logfile, externalXmlSettings, requirementsData);
+  const languageClientOptions: LanguageClientOptions = getLanguageClientOptions(logfile, externalXmlSettings, requirementsData, context);
   languageClient = new LanguageClient('xml', 'XML Support', executable, languageClientOptions);
 
   languageClient.onTelemetry(async (e: TelemetryEvent) => {
@@ -106,7 +106,11 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   return languageClient;
 }
 
-function getLanguageClientOptions(logfile: string, externalXmlSettings: ExternalXmlSettings, requirementsData: RequirementsData): LanguageClientOptions {
+function getLanguageClientOptions(
+    logfile: string,
+    externalXmlSettings: ExternalXmlSettings,
+    requirementsData: RequirementsData,
+    context: ExtensionContext): LanguageClientOptions {
   return {
     // Register the server for xml and xsl
     documentSelector: [
@@ -133,7 +137,7 @@ function getLanguageClientOptions(logfile: string, externalXmlSettings: External
         shouldLanguageServerExitOnShutdown: true
       }
     },
-    errorHandler: new ClientErrorHandler('XML'),
+    errorHandler: new ClientErrorHandler('XML', context),
     synchronize: {
       //preferences starting with these will trigger didChangeConfiguration
       configurationSection: ['xml', '[xml]', 'files.trimFinalNewlines', 'files.trimTrailingWhitespace', 'files.insertFinalNewline']

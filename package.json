@@ -67,7 +67,8 @@
     "Snippets"
   ],
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.1.2",
+    "@types/glob": "^7.1.4",
     "@types/node": "^10.14.16",
     "@types/vscode": "^1.37.0",
     "@types/yauzl": "^2.9.1",
