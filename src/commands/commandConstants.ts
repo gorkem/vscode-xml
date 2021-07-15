@@ -62,6 +62,11 @@ export namespace ClientCommandConstants {
    * Client command to execute an XML command on XML Language Server side.
    */
   export const EXECUTE_WORKSPACE_COMMAND = 'xml.workspace.executeCommand';
+
+  /**
+   * Command to restart connection to language server.
+   */
+  export const RESTART_LANGUAGE_SERVER = 'xml.restart.language.server';
 }
 
 /**

@@ -524,6 +524,11 @@
         "command": "xml.validation.all.files",
         "title": "Revalidate all opened XML files",
         "category": "XML"
+      },
+      {
+        "command": "xml.restart.language.server",
+        "title": "Restart Language Server",
+        "category": "XML"
       }
     ],
     "menus": {

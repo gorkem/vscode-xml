@@ -4,6 +4,7 @@ import { CancellationToken, ExecuteCommandParams, ExecuteCommandRequest, Referen
 import { LanguageClient } from 'vscode-languageclient/node';
 import { markdownPreviewProvider } from "../markdownPreviewProvider";
 import { ClientCommandConstants, ServerCommandConstants } from "./commandConstants";
+import { activate, deactivate } from "../extension";
 
 /**
  * Register the commands for vscode-xml that don't require communication with the language server
@@ -26,6 +27,7 @@ export async function registerClientServerCommands(context: ExtensionContext, la
   registerCodeLensReferencesCommands(context, languageClient);
   registerValidationCommands(context);
   registerCodeLensAssociationCommands(context, languageClient);
+  registerRestartLanguageServerCommand(context, languageClient);
 
   // Register client command to execute custom XML Language Server command
   context.subscriptions.push(commands.registerCommand(ClientCommandConstants.EXECUTE_WORKSPACE_COMMAND, (command, ...rest) => {
@@ -183,5 +185,19 @@ function registerCodeLensAssociationCommands(context: ExtensionContext, language
       };
     }
   }));
+}
+
+/**
+ * Register command to restart the connection to the language server
+ *
+ * @param context the extension context
+ * @param languageClient the language client
+ */
+function registerRestartLanguageServerCommand(context: ExtensionContext, languageClient: LanguageClient) {
+  context.subscriptions.push(commands.registerCommand(ClientCommandConstants.RESTART_LANGUAGE_SERVER, async () => {
+    await deactivate().then(async result => {
+        await activate(context);
+    })
+}));
 
 }
