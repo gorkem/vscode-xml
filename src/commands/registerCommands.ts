@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { commands, ExtensionContext, OpenDialogOptions, Position, QuickPickItem, Uri, window, workspace, WorkspaceEdit } from "vscode";
-import { CancellationToken, ExecuteCommandParams, ExecuteCommandRequest, ReferencesRequest, TextDocumentIdentifier, TextDocumentEdit } from "vscode-languageclient";
+import { CancellationToken, ExecuteCommandParams, ExecuteCommandRequest, ReferencesRequest, TextDocumentIdentifier, TextDocumentEdit, Message } from "vscode-languageclient";
 import { LanguageClient } from 'vscode-languageclient/node';
 import { markdownPreviewProvider } from "../markdownPreviewProvider";
 import { ClientCommandConstants, ServerCommandConstants } from "./commandConstants";
@@ -195,9 +195,10 @@ function registerCodeLensAssociationCommands(context: ExtensionContext, language
  */
 function registerRestartLanguageServerCommand(context: ExtensionContext, languageClient: LanguageClient) {
   context.subscriptions.push(commands.registerCommand(ClientCommandConstants.RESTART_LANGUAGE_SERVER, async () => {
-    await deactivate().then(async result => {
-        await activate(context);
-    })
+    // Use an empty error and empty message to trigger the clientErrorHandler
+    const emptyError = new Error();
+    const emptyMessage = null;
+    languageClient.clientOptions.errorHandler.error(emptyError, <Message>emptyMessage, 0);
 }));
 
 }
