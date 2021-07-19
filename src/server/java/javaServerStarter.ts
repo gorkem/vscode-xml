@@ -1,15 +1,26 @@
 import * as os from 'os';
 import * as path from 'path';
-import { ExtensionContext, workspace } from 'vscode';
+import { ExtensionContext, window, workspace } from 'vscode';
 import { Executable } from 'vscode-languageclient/node';
 import { getProxySettings, getProxySettingsAsJVMArgs, jvmArgsContainsProxySettings, ProxySettings } from '../../settings/proxySettings';
 import { getJavaagentFlag, getKey, getXMLConfiguration, IS_WORKSPACE_VMARGS_XML_ALLOWED, xmlServerVmargs } from '../../settings/settings';
 import { RequirementsData } from '../requirements';
-const glob = require('glob');
+import { HEAP_DUMP_LOCATION } from './jvmArguments';
+import glob = require('glob');
 
 declare var v8debug;
 
 const DEBUG = (typeof v8debug === 'object') || startedInDebugMode();
+
+/**
+ * Argument that tells the program to crash when an OutOfMemoryError is raised
+ */
+const CRASH_ON_OOM = '-XX:+ExitOnOutOfMemoryError';
+
+/**
+ * Argument that tells the program to generate a heap dump file when an OutOfMemoryError is raised
+ */
+const HEAP_DUMP = '-XX:+HeapDumpOnOutOfMemoryError';
 
 export async function prepareJavaExecutable(
   context: ExtensionContext,
@@ -63,6 +74,21 @@ function prepareParams(requirements: RequirementsData, xmlJavaExtensions: string
       params.push(watchParentProcess + 'false');
     }
   }
+  if (vmargs.indexOf(CRASH_ON_OOM) < 0) {
+    params.push(CRASH_ON_OOM);
+  }
+  if (vmargs.indexOf(HEAP_DUMP) < 0) {
+    params.push(HEAP_DUMP);
+  }
+  if (vmargs.indexOf(HEAP_DUMP_LOCATION) < 0) {
+    params.push(`${HEAP_DUMP_LOCATION}${context.globalStorageUri.fsPath}`);
+  } else {
+    window.showWarningMessage('Heap dump location has been modified. '
+      + 'vscode-xml won\'t delete the heap dumps. '
+      + 'vscode-xml\'s Out Of Memory detection won\'t work properly, '
+      + 'unless you manually delete the heap dumps after each Out Of Memory crash.');
+  }
+
   // "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify
   // were deprecated in JDK 13 and will likely be removed in a future release."
   // so only add -noverify for older versions
