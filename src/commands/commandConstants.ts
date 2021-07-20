@@ -59,6 +59,11 @@ export namespace ClientCommandConstants {
   export const OPEN_BINDING_WIZARD = 'xml.open.binding.wizard';
 
   /**
+   * VSCode client command to open the grammar/schema binding wizard from command menu.
+   */
+  export const COMMAND_PALETTE_BINDING_WIZARD = 'xml.command.bind.grammar';
+
+  /**
    * Client command to execute an XML command on XML Language Server side.
    */
   export const EXECUTE_WORKSPACE_COMMAND = 'xml.workspace.executeCommand';
@@ -85,4 +90,9 @@ export namespace ServerCommandConstants {
    * Command to associate a grammar in a XML document
    */
   export const ASSOCIATE_GRAMMAR_INSERT = "xml.associate.grammar.insert";
+
+  /**
+   * Command to check if the current XML document is bound to a grammar
+   */
+  export const CHECK_BOUND_GRAMMAR = "xml.check.bound.grammar"
 }

@@ -524,6 +524,11 @@
         "command": "xml.validation.all.files",
         "title": "Revalidate all opened XML files",
         "category": "XML"
+      },
+      {
+        "command": "xml.command.bind.grammar",
+        "title": "Bind to grammar/schema file",
+        "category": "XML"
       }
     ],
     "menus": {
@@ -531,6 +536,10 @@
         {
           "command": "xml.validation.current.file",
           "when": "editorLangId == xml"
+        },
+        {
+          "command": "xml.command.bind.grammar",
+          "when": "resourceFilename =~ /xml/ && editorIsOpen && canBindGrammar"
         }
       ]
     },
